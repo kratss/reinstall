@@ -141,15 +141,24 @@ if contains mullvad-vpn $packages || or contains mullvad-browser $packages
     end
 end
 ##
-### Repo: :
 ### Installation
 echo ""
 echo "Installing packages"
 sudo $mngr install $packages
+if test "$_flag_type" = gui
+    mkdir ~/.local/bin/
+    git clone https://github.com/kratss/hawk
+    cd hawk
+    mv hawk.fish ~/.local/bin/
+    mv hawk.preview ~/.local/bin/
+end
+
 echo ""
 echo "Installing dot files"
 if test -e ./dotfiles
-    git clone https://codeberg.org/krats/dotfiles
+    mkdir dotfiles
+    cd dotfiles
+    git clone https://github.com/kratss/dotfiles
     mkdir ~/.config 2>/dev/null
     mkdir ~/.local/bin 2>/dev/null
     cp -r ./dotfiles/.config/* ~/.config/
