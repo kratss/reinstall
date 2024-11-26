@@ -39,7 +39,7 @@ set headless \
     fzf \
     git \
     htop \
-    nmtui \
+    NetworkManager-tui \
     nnn \
     neovim \
     trash-cli \
@@ -146,13 +146,12 @@ echo ""
 echo "Installing packages"
 sudo $mngr install $packages
 if test "$_flag_type" = gui
-    mkdir ~/.local/bin/
+    rm -rf ./hawk
+    mkdir ~/.local/bin/ 2>/dev/null
     git clone https://github.com/kratss/hawk
-    cd hawk
-    mv hawk.fish ~/.local/bin/
-    mv hawk.preview ~/.local/bin/
-    cd ..
-    rm -r ./hawk
+    mv ./hawk/hawk.fish ~/.local/bin/
+    mv ./hawk/hawk-preview.fish ~/.local/bin/
+    rm -rf ./hawk
 end
 
 echo ""
@@ -188,7 +187,7 @@ if contains bluez $packages
 end
 
 # Matrix server updater
-if contains all $packages
+if contains all $_flag_type
     echo "Enabling matrix-updater.service"
     systemctl --user enable matrix-updater.serivce
     systemctl --user status matrix-updater.service | head -n 3
