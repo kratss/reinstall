@@ -151,6 +151,8 @@ if test "$_flag_type" = gui
     cd hawk
     mv hawk.fish ~/.local/bin/
     mv hawk.preview ~/.local/bin/
+    cd ..
+    rm -r ./hawk
 end
 
 echo ""
