@@ -9,8 +9,6 @@
 #   all: everything needed for my main personal computer setup
 # --extras: add full multimedia support
 #  
-# TODO: Automate adding matrix-ansible update script to crontab or systemd
-# TODO: Systemd service to run `updatedb` daily
 # TODO: Use flatpak-create-usb for enabling local installation w/o internet
 # TODO: Add flathub remote, possibly automate enabling flatpaks
 # TODO: include flatpaks: flatseal, authenticator, qbittorrent, dejadup, krita
@@ -19,7 +17,6 @@
 #   	snap/firefox/common/.mozilla/firefox/sway/
 #   Copy over ./extensions/ ./chrome/ ./prefs.js ./home.html
 # TODO: sed edit foot.ini so the foot-extra is specified correcily for each distro
-# TODO: Add ~/.config/tridactyl to dotfiles repo
 
 argparse apps extras 'type=?' -- $argv
 or return 1
@@ -43,6 +40,7 @@ set headless \
     nnn \
     neovim \
     trash-cli \
+    tree \
     w3m \
     wl-clipboard
 
@@ -103,7 +101,7 @@ if type dnf 2>/dev/null
     set -a gui foot-terminfo
 else if type apt 2>/dev/null
     set -g mngr apt-get
-    set packages (string replace nmtui "" $packages)
+    set packages (string replace NetworkManager-tui "" $packages)
 else if type zypper 2>/dev/null
     set -g mngr zypper
     set -g group "install -t pattern"
@@ -146,6 +144,7 @@ echo ""
 echo "Installing packages"
 sudo $mngr install $packages
 if test "$_flag_type" = gui
+    echo ""
     rm -rf ./hawk
     mkdir ~/.local/bin/ 2>/dev/null
     git clone https://github.com/kratss/hawk
@@ -159,11 +158,11 @@ echo "Installing dot files"
 if test -e ./dotfiles
     mkdir dotfiles
     cd dotfiles
-    git clone https://github.com/kratss/dotfiles
+    git clone https://github.com/kratss/dotfiles.git >/dev/null
     mkdir ~/.config 2>/dev/null
     mkdir ~/.local/bin 2>/dev/null
     cp -r ./dotfiles/.config/* ~/.config/
-    #cp -r ./dotfiles/.local/bin/* ~/.local/bin/
+    cp -r ./dotfiles/.local/bin/* ~/.local/bin/
     rm -r -f ./dotfiles
 end
 ##
@@ -193,3 +192,8 @@ if contains all $_flag_type
     systemctl --user status matrix-updater.service | head -n 3
 end
 ##
+### firefox
+if contains gui $_flag_type
+    firefox https://addons.mozilla.org/en-US/firefox/addon/tridactyl-vim/
+    firefox https://addons.mozilla.org/en-US/firefox/addon/i-dont-care-about-cookies/
+end
