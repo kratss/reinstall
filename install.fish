@@ -219,3 +219,9 @@ if type apt 2>/dev/null
     wget https://github.com/ryanoasis/nerd-fonts/releases/download/v3.3.0/0xProto.zip
     sudo unzip *.zip -d /usr/share/fonts/nerd
 end
+
+if type apt 2>/dev/null
+    echo "Install these .debs if using 24.04 or older"
+    wget http://nl.archive.ubuntu.com/ubuntu/pool/universe/f/fuzzel/fuzzel_1.9.2-1build2_amd64.deb
+    wget http://de.archive.ubuntu.com/ubuntu/pool/universe/w/waybar/waybar_0.11.0-3_amd64.deb
+end
