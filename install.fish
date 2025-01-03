@@ -106,7 +106,7 @@ if type dnf 2>/dev/null
 else if type apt 2>/dev/null
     set -g mngr apt-get
     set packages (string replace NetworkManager-tui "" $packages)
-    set packages (string replace git-gui "" $packages)
+    set packages (string replace gitui "git-gui" $packages)
 else if type zypper 2>/dev/null
     set -g mngr zypper
     set -g group "install -t pattern"
