@@ -57,8 +57,6 @@ set gui \
     imv \
     light \
     mpv \
-    mullvad-vpn \
-    mullvad-browser \
     qutebrowser \
     sway \
     tlp \
@@ -75,8 +73,9 @@ set extras
 
 set matrix_admin \
     ansible \
-    just
-
+    just \
+    mullvad-vpn \
+    mullvad-browser
 set lazyvim \
     luarocks \
     fd-find \
