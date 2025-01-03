@@ -157,13 +157,11 @@ end
 
 echo ""
 echo "Installing dot files"
-mkdir dotfiles
-cd dotfiles
 git clone https://github.com/kratss/dotfiles.git >/dev/null
 mkdir ~/.config 2>/dev/null
 mkdir ~/.local/bin 2>/dev/null
-cp -r ./dotfiles/.config/* ~/.config/
-cp -r ./dotfiles/.local/bin/* ~/.local/bin/
+cp -r ./dotfiles/* ~/.config/
+#cp -r ./dotfiles/.local/bin/* ~/.local/bin/
 rm -r -f ./dotfiles
 ##
 
