@@ -26,7 +26,6 @@ or return 1
 # Separated to reduce clutter
 set headless_basics \
     encfs \
-    fuse \
     plocate
 
 set headless \
@@ -80,7 +79,8 @@ set matrix_admin \
 
 set lazyvim \
     luarocks \
-    fd-find
+    fd-find \
+    fuse
 
 if test "$_flag_type" = headless
     set -g packages $headless $lazyvim
