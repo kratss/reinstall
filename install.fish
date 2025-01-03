@@ -85,7 +85,8 @@ set lazyvim \
 if test "$_flag_type" = headless
     set -g packages $headless $lazyvim
 end
-
+echo "type is:"
+echo $headless
 if test "$_flag_type" = gui
     set -g packages $headless $gui
 end
@@ -158,6 +159,8 @@ end
 
 echo ""
 echo "Installing dot files"
+echo "Package list: "
+echo $packages
 git clone https://github.com/kratss/dotfiles.git >/dev/null
 mkdir ~/.config 2>/dev/null
 mkdir ~/.local/bin 2>/dev/null
