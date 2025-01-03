@@ -162,7 +162,6 @@ end
 
 echo ""
 echo "Installing dot files"
-
 git clone https://github.com/kratss/dotfiles.git >/dev/null
 mkdir ~/.config 2>/dev/null
 mkdir ~/.local/bin 2>/dev/null
@@ -204,7 +203,7 @@ if contains gui $_flag_type
     firefox https://addons.mozilla.org/en-US/firefox/addon/i-dont-care-about-cookies/
 end
 ### nvim.appimage because apt distros have ancient version of nvim
-if type apt 2>/dev/null and not test -e ~/.local/bin/nvim.appimage
+if type apt 2>/dev/null; and not test -e ~/.local/bin/nvim.appimage
     wget https://github.com/neovim/neovim/releases/download/nightly/nvim.appimage
     chmod +x nvim.appimage
     mkdir ~/.local/bin/
