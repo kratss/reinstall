@@ -86,7 +86,7 @@ if test "$_flag_type" = headless
     set -g packages $headless $lazyvim
 end
 echo "type is:"
-echo $headless
+echo $_flag_type
 if test "$_flag_type" = gui
     set -g packages $headless $gui
 end
