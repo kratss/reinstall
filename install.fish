@@ -148,7 +148,8 @@ end
 echo ""
 echo "Installing packages"
 echo "Package list: "
-echo $packagessudo $mngr install $packages
+echo $packages
+sudo $mngr install $packages
 if test "$_flag_type" = gui
     echo ""
     rm -rf ./hawk
