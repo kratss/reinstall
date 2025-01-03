@@ -82,11 +82,13 @@ set lazyvim \
     fd-find \
     fuse
 
+echo "Installation type is:"
+echo $_flag_type
+
 if test "$_flag_type" = headless
     set -g packages $headless $lazyvim
 end
-echo "type is:"
-echo $_flag_type
+
 if test "$_flag_type" = gui
     set -g packages $headless $gui
 end
@@ -202,10 +204,17 @@ if contains gui $_flag_type
     firefox https://addons.mozilla.org/en-US/firefox/addon/tridactyl-vim/
     firefox https://addons.mozilla.org/en-US/firefox/addon/i-dont-care-about-cookies/
 end
-### nvim.appimage because apt distros have ancient version of nvim
+
+
+### lazyvim
+# nvim.appimage because apt distros have ancient version of nvim
 if type apt 2>/dev/null; and not test -e ~/.local/bin/nvim.appimage
     wget https://github.com/neovim/neovim/releases/download/nightly/nvim.appimage
     chmod +x nvim.appimage
     mkdir ~/.local/bin/
     mv nvim.appimage ~/.local/bin/
 end
+
+# get nerdfonts for pretty glyphs
+wget https://github.com/ryanoasis/nerd-fonts/releases/download/v3.3.0/0xProto.zip
+unzip *.zip -d ~/.local/share/fonts
