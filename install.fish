@@ -35,10 +35,11 @@ set headless \
     fuzzel \
     fzf \
     git \
+    gitui \
     htop \
     NetworkManager-tui \
-    nnn \
     neovim \
+    ranger \
     trash-cli \
     tree \
     w3m \
@@ -58,6 +59,7 @@ set gui \
     mpv \
     mullvad-vpn \
     mullvad-browser \
+    qutebrowser \
     sway \
     tlp \
     waybar \
@@ -155,17 +157,17 @@ end
 
 echo ""
 echo "Installing dot files"
-if test -e ./dotfiles
-    mkdir dotfiles
-    cd dotfiles
-    git clone https://github.com/kratss/dotfiles.git >/dev/null
-    mkdir ~/.config 2>/dev/null
-    mkdir ~/.local/bin 2>/dev/null
-    cp -r ./dotfiles/.config/* ~/.config/
-    cp -r ./dotfiles/.local/bin/* ~/.local/bin/
-    rm -r -f ./dotfiles
-end
+mkdir dotfiles
+cd dotfiles
+git clone https://github.com/kratss/dotfiles.git >/dev/null
+mkdir ~/.config 2>/dev/null
+mkdir ~/.local/bin 2>/dev/null
+cp -r ./dotfiles/.config/* ~/.config/
+cp -r ./dotfiles/.local/bin/* ~/.local/bin/
+rm -r -f ./dotfiles
 ##
+
+
 ### Systemctl
 echo ""
 
@@ -196,4 +198,11 @@ end
 if contains gui $_flag_type
     firefox https://addons.mozilla.org/en-US/firefox/addon/tridactyl-vim/
     firefox https://addons.mozilla.org/en-US/firefox/addon/i-dont-care-about-cookies/
+end
+### nvim.appimage because apt distros have ancient version of nvim
+if type apt 2>/dev/null
+    wget https://github.com/neovim/neovim/releases/download/nightly/nvim.appimage
+    chmod +x nvim.appimage
+    mkdir ~/.local/bin/
+    mv nvim.appimage ~/.local/bin/
 end
