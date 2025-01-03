@@ -106,6 +106,7 @@ if type dnf 2>/dev/null
 else if type apt 2>/dev/null
     set -g mngr apt-get
     set packages (string replace NetworkManager-tui "" $packages)
+    set packages (string replace git-gui "" $packages)
 else if type zypper 2>/dev/null
     set -g mngr zypper
     set -g group "install -t pattern"
@@ -146,7 +147,8 @@ end
 ### Installation
 echo ""
 echo "Installing packages"
-sudo $mngr install $packages
+echo "Package list: "
+echo $packagessudo $mngr install $packages
 if test "$_flag_type" = gui
     echo ""
     rm -rf ./hawk
@@ -159,8 +161,7 @@ end
 
 echo ""
 echo "Installing dot files"
-echo "Package list: "
-echo $packages
+
 git clone https://github.com/kratss/dotfiles.git >/dev/null
 mkdir ~/.config 2>/dev/null
 mkdir ~/.local/bin 2>/dev/null
