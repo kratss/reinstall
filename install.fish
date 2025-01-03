@@ -200,8 +200,8 @@ end
 ##
 ### firefox
 if contains gui $_flag_type
-    firefox https://addons.mozilla.org/en-US/firefox/addon/tridactyl-vim/
-    firefox https://addons.mozilla.org/en-US/firefox/addon/i-dont-care-about-cookies/
+    firefox https://addons.mozilla.org/en-US/firefox/addon/tridactyl-vim/ &
+    firefox https://addons.mozilla.org/en-US/firefox/addon/i-dont-care-about-cookies/ &
 end
 
 
