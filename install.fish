@@ -216,5 +216,7 @@ if type apt 2>/dev/null; and not test -e ~/.local/bin/nvim.appimage
 end
 
 # get nerdfonts for pretty glyphs
-wget https://github.com/ryanoasis/nerd-fonts/releases/download/v3.3.0/0xProto.zip
-unzip *.zip -d ~/.local/share/fonts
+if type apt 2>/dev/null
+    wget https://github.com/ryanoasis/nerd-fonts/releases/download/v3.3.0/0xProto.zip
+    unzip *.zip -d /usr/share/fonts
+end
