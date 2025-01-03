@@ -26,6 +26,7 @@ or return 1
 # Separated to reduce clutter
 set headless_basics \
     encfs \
+    fuse \
     plocate
 
 set headless \
