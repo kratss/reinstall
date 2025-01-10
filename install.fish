@@ -57,6 +57,7 @@ set gui \
     imv \
     light \
     mpv \
+    pavucontrol \
     qutebrowser \
     sway \
     tlp \
@@ -89,7 +90,7 @@ if test "$_flag_type" = headless
 end
 
 if test "$_flag_type" = gui
-    set -g packages $headless $gui
+    set -g packages $headless $gui $apps
 end
 
 if test "$_flag_type" = all
