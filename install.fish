@@ -70,13 +70,13 @@ set apps \
     newsboat \
     thunderbird
 
-set extras
+set extras \
+    mullvad-vpn \
+    mullvad-browser
 
 set matrix_admin \
     ansible \
-    just \
-    mullvad-vpn \
-    mullvad-browser
+    just
 set lazyvim \
     luarocks \
     fd-find \
