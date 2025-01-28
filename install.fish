@@ -65,7 +65,6 @@ set gui \
     wlsunset
 
 set apps \
-    firefox \
     keepassxc \
     newsboat \
     thunderbird
@@ -77,6 +76,7 @@ set extras \
 set matrix_admin \
     ansible \
     just
+
 set lazyvim \
     luarocks \
     fd-find \
@@ -90,7 +90,7 @@ if test "$_flag_type" = headless
 end
 
 if test "$_flag_type" = gui
-    set -g packages $headless $gui $apps
+    set -g packages $headless $lazyvim $gui $apps
 end
 
 if test "$_flag_type" = all
@@ -171,10 +171,16 @@ cp -r ./dotfiles/* ~/.config/
 #cp -r ./dotfiles/.local/bin/* ~/.local/bin/
 rm -r -f ./dotfiles
 ##
-
-
 ### Systemctl
 echo ""
+
+# Disable GDM login manager
+# Login managers cause issue with sway reading $PATH correcily
+if contains sway $packages
+    echo "Disabling GDM login manager for sway compatibility"
+    systemctl disable gdm
+end
+
 
 # Syncthing
 if contains syncthing $packages
@@ -204,8 +210,7 @@ if contains gui $_flag_type
     firefox https://addons.mozilla.org/en-US/firefox/addon/tridactyl-vim/ &
     firefox https://addons.mozilla.org/en-US/firefox/addon/i-dont-care-about-cookies/ &
 end
-
-
+##
 ### lazyvim
 # nvim.appimage because apt distros have ancient version of nvim
 if type apt 2>/dev/null; and not test -e ~/.local/bin/nvim.appimage
