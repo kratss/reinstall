@@ -14,9 +14,11 @@
 # TODO: include flatpaks: flatseal, authenticator, qbittorrent, dejadup, krita
 # TODO: configure firefox:
 #   Create a profile: .mozilla/firefox/sway/ or 
-#   	snap/firefox/common/.mozilla/firefox/sway/
+#   snap/firefox/common/.mozilla/firefox/sway/
 #   Copy over ./extensions/ ./chrome/ ./prefs.js ./home.html
 # TODO: sed edit foot.ini so the foot-extra is specified correcily for each distro
+#   term=foot on Ubuntu
+#   term=foot-extra on Fedora
 
 argparse apps extras 'type=?' -- $argv
 or return 1
@@ -164,12 +166,11 @@ end
 
 echo ""
 echo "Installing dot files"
-git clone https://github.com/kratss/dotfiles.git >/dev/null
-mkdir ~/.config 2>/dev/null
-mkdir ~/.local/bin 2>/dev/null
-cp -r ./dotfiles/* ~/.config/
-#cp -r ./dotfiles/.local/bin/* ~/.local/bin/
-rm -r -f ./dotfiles
+git clone https://github.com/kratss/dotfiles4.git >/dev/null
+if test "$mngr" = dnf
+    cp -r ./dotfiles4/* ~/
+    rm -r -f ./dotfiles
+end
 ##
 ### Systemctl
 echo ""
@@ -180,7 +181,6 @@ if contains sway $packages
     echo "Disabling GDM login manager for sway compatibility"
     systemctl disable gdm
 end
-
 
 # Syncthing
 if contains syncthing $packages
@@ -203,12 +203,6 @@ if contains all $_flag_type
     echo "Enabling matrix-updater.service"
     systemctl --user enable matrix-updater.serivce
     systemctl --user status matrix-updater.service | head -n 3
-end
-##
-### firefox
-if contains gui $_flag_type
-    firefox https://addons.mozilla.org/en-US/firefox/addon/tridactyl-vim/ &
-    firefox https://addons.mozilla.org/en-US/firefox/addon/i-dont-care-about-cookies/ &
 end
 ##
 ### lazyvim
