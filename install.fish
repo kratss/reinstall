@@ -168,8 +168,10 @@ echo ""
 echo "Installing dot files"
 git clone https://github.com/kratss/dotfiles4.git >/dev/null
 if test "$mngr" = dnf
-    cp -r ./dotfiles4/* ~/
-    rm -r -f ./dotfiles
+    rm -rf ./dotfiles/.git
+    cp -r ./dotfiles4/*.
+    cd ..
+    rm -r ./dotfiles
 end
 ##
 ### Systemctl
