@@ -72,12 +72,10 @@ set apps \
     thunderbird
 
 set extras \
+    ansible \  just \
     mullvad-vpn \
-    mullvad-browser
-
-set matrix_admin \
-    ansible \
-    just
+    mullvad-browser \
+    rsync
 
 set lazyvim \
     luarocks \
@@ -169,9 +167,9 @@ echo "Installing dot files"
 git clone https://github.com/kratss/dotfiles4.git >/dev/null
 if test "$mngr" = dnf
     rm -rf ./dotfiles/.git
-    cp -r ./dotfiles4/.*
+    cp -r ./dotfiles4/.* ~/
     cd ..
-    rm -r ./dotfiles
+    rm -r ./dotfiles4
 end
 ##
 ### Systemctl
@@ -224,6 +222,6 @@ end
 
 if type apt 2>/dev/null
     echo "Install these .debs if using 24.04 or older"
-    wget http://nl.archive.ubuntu.com/ubuntu/pool/universe/f/fuzzel/fuzzel_1.9.2-1build2_amd64.deb
-    wget http://de.archive.ubuntu.com/ubuntu/pool/universe/w/waybar/waybar_0.11.0-3_amd64.deb
+    #wget http://nl.archive.ubuntu.com/ubuntu/pool/universe/f/fuzzel/fuzzel_1.9.2-1build2_amd64.deb
+    #wget http://de.archive.ubuntu.com/ubuntu/pool/universe/w/waybar/waybar_0.11.0-3_amd64.deb
 end
