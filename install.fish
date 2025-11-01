@@ -33,6 +33,7 @@ set headless_basics \
 set headless \
     $headless_basics \
     curl \
+    dash \
     fish \
     fuzzel \
     fzf \
@@ -41,14 +42,17 @@ set headless \
     htop \
     NetworkManager-tui \
     neovim \
-    ranger \
+    nnn \
     trash-cli \
     tree \
     w3m \
     wl-clipboard
 
-set gui_basics bluez
+# Packages sometimes missing from minimal installs
+set gui_basics blue flatpak
 
+# Packages needed for the basic intended interface
+# python3-pynacl:   dependency for qutebrowser inegration with keepassxc
 set gui \
     $gui_basics \
     copyq \
@@ -58,32 +62,29 @@ set gui \
     helvum \
     imv \
     light \
+    mako \
     mpv \
     pavucontrol \
-    qutebrowser \
+    python3-pynacl \
     sway \
     tlp \
     waybar \
     wlsunset
 
-set apps \
-    keepassxc \
-    newsboat \
-    thunderbird
+# Commonly used applications
+set apps gnome-software keepassxc newsboat thunderbird mullvad-browser
 
-set extras \
-    ansible \  just \
-    mullvad-vpn \
-    mullvad-browser \
-    rsync
+# Items only needed for primary device
+# ansible: required for controlling matrix server 
+# just: required for controlling matrix server
+set extras ansible just mullvad-vpn mullvad-browser rsync vorta
 
 set lazyvim \
     luarocks \
     fd-find \
     fuse
 
-echo "Installation type is:"
-echo $_flag_type
+echo "Installation type is: $_flag_type"
 
 if test "$_flag_type" = headless
     set -g packages $headless $lazyvim
@@ -101,6 +102,7 @@ end
 ##
 ### Package manager detection
 # Also handles varying package names across distros
+echo "Detected package manager: "
 if type dnf 2>/dev/null
     set -g mngr dnf
     set -g group "group install"
@@ -118,19 +120,28 @@ else
     echo "Failed to detect package manager."
     exit
 end
-echo ""
-echo "Detected package manager: $mngr"
 echo "Installing script dependencies"
 sudo $mngr install git curl
+echo "Installing updates"
 sudo $mngr update
 ##
+### Configure Flatpak
+if type flatpak &>/dev/null
+    flatpak remote-add --if-not-exists fedora oci+https://registry.fedoraproject.org
+    flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+    flatpak install -y fedora com.github.johnfactotum.Foliate
+    flatpak install -y fedora org.gnome.Loupe
+    flatpak install -y fedora org.gnome.Evince
+    flatpak install -y im.riot.Riot
+    flatpak install -y org.gnome.Podcasts
+end
+
 ### Repo: Mullvad
 if contains mullvad-vpn $packages || or contains mullvad-browser $packages
     echo ""
     echo "Enabling Mullvad repo"
     if test "$mngr" = dnf
-        sudo dnf config-manager --add-repo \
-            https://repository.mullvad.net/rpm/stable/mullvad.repo
+        sudo dnf config-manager addrepo --from-repofile=https://repository.mullvad.net/rpm/stable/mullvad.repo --overwrite
     else if test "$mngr" = apt-get
         sudo curl -fsSLo /usr/share/keyrings/mullvad-keyring.asc \
             https://repository.mullvad.net/deb/mullvad-keyring.asc
@@ -149,9 +160,8 @@ end
 ### Installation
 echo ""
 echo "Installing packages"
-echo "Package list: "
-echo $packages
-sudo $mngr install $packages
+echo "sudo $mngr install $packages --skip-unavailable"
+sudo $mngr -y install $packages --skip-unavailable
 if test "$_flag_type" = gui
     echo ""
     rm -rf ./hawk
@@ -159,17 +169,18 @@ if test "$_flag_type" = gui
     git clone https://github.com/kratss/hawk
     mv ./hawk/hawk.fish ~/.local/bin/
     mv ./hawk/hawk-preview.fish ~/.local/bin/
-    rm -rf ./hawk
+    rm -rf ./haw&k
 end
 
 echo ""
 echo "Installing dot files"
 git clone https://github.com/kratss/dotfiles4.git >/dev/null
 if test "$mngr" = dnf
-    rm -rf ./dotfiles/.git
-    cp -r ./dotfiles4/.* ~/
+    echo "Cleaning dot files"
+    rm -rf ./dotfiles/.git &>/dev/null
+    cp -r ./dotfiles4/.* ~/ &>/dev/null
     cd ..
-    rm -r ./dotfiles4
+    rm -r ./dotfiles4 &>/dev/null
 end
 ##
 ### Systemctl
@@ -220,8 +231,11 @@ if type apt 2>/dev/null
     sudo unzip *.zip -d /usr/share/fonts/nerd
 end
 
+# TODO: Delete
 if type apt 2>/dev/null
     echo "Install these .debs if using 24.04 or older"
     #wget http://nl.archive.ubuntu.com/ubuntu/pool/universe/f/fuzzel/fuzzel_1.9.2-1build2_amd64.deb
     #wget http://de.archive.ubuntu.com/ubuntu/pool/universe/w/waybar/waybar_0.11.0-3_amd64.deb
 end
+
+swaymsg reload
