@@ -40,7 +40,8 @@ set headless \
     wl-clipboard
 
 # Packages sometimes missing from minimal installs
-set gui_basics bluez flatpak
+# lxpolkit: allows authenitcation pop-ups. GNOME and KDE offer alternative polkits
+set gui_basics bluez flatpak lxpolkit
 
 # Packages needed for the basic intended interface
 # python3-pynacl:   dependency for qutebrowser inegration with keepassxc
