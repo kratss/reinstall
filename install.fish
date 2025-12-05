@@ -1,27 +1,17 @@
 #!/usr/bin/env fish
 # vim:foldmethod=marker:foldmarker=###,##
 
-# OPTIONS
-# --apps: Install favorite apps
-# --type=: Specify the desired installation type
-#   headless: config for headless installs
-#   gui: setup my preferred graphical environment
-#   all: everything needed for my main personal computer setup
-# --extras: add full multimedia support
-#  
-# TODO: Use flatpak-create-usb for enabling local installation w/o internet
-# TODO: Add flathub remote, possibly automate enabling flatpaks
-# TODO: include flatpaks: flatseal, authenticator, qbittorrent, dejadup, krita
-# TODO: configure firefox:
-#   Create a profile: .mozilla/firefox/sway/ or 
-#   snap/firefox/common/.mozilla/firefox/sway/
-#   Copy over ./extensions/ ./chrome/ ./prefs.js ./home.html
-# TODO: sed edit foot.ini so the foot-extra is specified correcily for each distro
-#   term=foot on Ubuntu
-#   term=foot-extra on Fedora
-
 argparse apps extras 'type=?' -- $argv
 or return 1
+if test (count $argv) -eq 0 or contains -- --help $argv
+    echo "No arguments provided"
+    echo "Installation types:
+--type=: Specify the desired installation type
+  headless: config for headless installs
+  gui: setup graphical environment
+  all: everything needed for my main personal computer setup"
+    exit
+end
 
 ### Packages
 # Basics are commonly installed utilities that may be missing on minimal installs
@@ -39,6 +29,7 @@ set headless \
     fzf \
     git \
     gitui \
+    gocryptfs \
     htop \
     NetworkManager-tui \
     neovim \
@@ -49,7 +40,7 @@ set headless \
     wl-clipboard
 
 # Packages sometimes missing from minimal installs
-set gui_basics blue flatpak
+set gui_basics bluez flatpak
 
 # Packages needed for the basic intended interface
 # python3-pynacl:   dependency for qutebrowser inegration with keepassxc
@@ -65,7 +56,8 @@ set gui \
     mako \
     mpv \
     pavucontrol \
-    python3-pynacl \
+    python3-nacl \
+    qutebrowser \
     sway \
     tlp \
     waybar \
@@ -88,14 +80,10 @@ echo "Installation type is: $_flag_type"
 
 if test "$_flag_type" = headless
     set -g packages $headless $lazyvim
-end
-
-if test "$_flag_type" = gui
+else if test "$_flag_type" = gui
     set -g packages $headless $lazyvim $gui $apps
-end
-
-if test "$_flag_type" = all
-    set -g packages $headless $gui $apps $extras
+else if test "$_flag_type" = all
+    set -g packages $headless $lazyvim $gui $apps $extras
     set -g flatpaks
     set -g groups Multimedia
 end
@@ -112,6 +100,7 @@ else if type apt 2>/dev/null
     set packages (string replace NetworkManager-tui "" $packages)
     set packages (string replace gitui "git-gui" $packages)
 else if type zypper 2>/dev/null
+
     set -g mngr zypper
     set -g group "install -t pattern"
     set packages (string replace nmtui      NetworkManager-tui $packages)
@@ -125,17 +114,6 @@ sudo $mngr install git curl
 echo "Installing updates"
 sudo $mngr update
 ##
-### Configure Flatpak
-if type flatpak &>/dev/null
-    flatpak remote-add --if-not-exists fedora oci+https://registry.fedoraproject.org
-    flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
-    flatpak install -y fedora com.github.johnfactotum.Foliate
-    flatpak install -y fedora org.gnome.Loupe
-    flatpak install -y fedora org.gnome.Evince
-    flatpak install -y im.riot.Riot
-    flatpak install -y org.gnome.Podcasts
-end
-
 ### Repo: Mullvad
 if contains mullvad-vpn $packages || or contains mullvad-browser $packages
     echo ""
@@ -175,13 +153,24 @@ end
 echo ""
 echo "Installing dot files"
 git clone https://github.com/kratss/dotfiles4.git >/dev/null
-if test "$mngr" = dnf
-    echo "Cleaning dot files"
-    rm -rf ./dotfiles/.git &>/dev/null
-    cp -r ./dotfiles4/.* ~/ &>/dev/null
-    cd ..
-    rm -r ./dotfiles4 &>/dev/null
+echo "Cleaning dot files"
+rm -rf ./dotfiles/.git &>/dev/null
+cp -r ./dotfiles4/.* ~/ &>/dev/null
+cd ..
+rm -r ./dotfiles4 &>/dev/null
+
+if type flatpak &>/dev/null
+    echo ""
+    echo "Installing flatpaks and flatpak repos"
+    flatpak remote-add --if-not-exists fedora oci+https://registry.fedoraproject.org
+    flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+    flatpak install -y fedora com.github.johnfactotum.Foliate
+    flatpak install -y fedora org.gnome.Loupe
+    flatpak install -y fedora org.gnome.Evince
+    flatpak install -y im.riot.Riot
+    flatpak install -y org.gnome.Podcasts
 end
+##
 ##
 ### Systemctl
 echo ""
@@ -225,17 +214,10 @@ if type apt 2>/dev/null; and not test -e ~/.local/bin/nvim.appimage
     mv nvim.appimage ~/.local/bin/
 end
 
-# get nerdfonts for pretty glyphs
+# Get nerdfonts for pretty glyphs
 if type apt 2>/dev/null
-    wget https://github.com/ryanoasis/nerd-fonts/releases/download/v3.3.0/0xProto.zip
+    wget https://github.com/ryanoasis/nerd-fonts/releases/download/v3.4.0/0xProto.zip
     sudo unzip *.zip -d /usr/share/fonts/nerd
 end
-
-# TODO: Delete
-if type apt 2>/dev/null
-    echo "Install these .debs if using 24.04 or older"
-    #wget http://nl.archive.ubuntu.com/ubuntu/pool/universe/f/fuzzel/fuzzel_1.9.2-1build2_amd64.deb
-    #wget http://de.archive.ubuntu.com/ubuntu/pool/universe/w/waybar/waybar_0.11.0-3_amd64.deb
-end
-
+##
 swaymsg reload
