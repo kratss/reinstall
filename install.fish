@@ -1,9 +1,7 @@
 #!/usr/bin/env fish
 # vim:foldmethod=marker:foldmarker=###,##
 
-argparse apps extras 'type=?' -- $argv
-or return 1
-if test (count $argv) -eq 0 or contains -- --help $argv
+if test (count $argv) -eq 0 #or contains -- --help $argv
     echo "No arguments provided"
     echo "Installation types:
 --type=: Specify the desired installation type
@@ -13,6 +11,8 @@ if test (count $argv) -eq 0 or contains -- --help $argv
     exit
 end
 
+argparse apps extras 'type=?' -- $argv
+or return 1
 ### Packages
 # Basics are commonly installed utilities that may be missing on minimal installs
 # Separated to reduce clutter
@@ -70,7 +70,8 @@ set apps gnome-software keepassxc newsboat thunderbird mullvad-browser
 # Items only needed for primary device
 # ansible: required for controlling matrix server 
 # just: required for controlling matrix server
-set extras ansible just mullvad-vpn mullvad-browser rsync vorta
+# python3-passlib: required for controlling matrix server
+set extras ansible python3-passlib just mullvad-vpn mullvad-browser rsync vorta
 
 set lazyvim \
     luarocks \
@@ -153,12 +154,12 @@ end
 
 echo ""
 echo "Installing dot files"
-git clone https://github.com/kratss/dotfiles4.git >/dev/null
+git clone https://github.com/kratss/dotfiles.git >/dev/null
 echo "Cleaning dot files"
 rm -rf ./dotfiles/.git &>/dev/null
-cp -r ./dotfiles4/.* ~/ &>/dev/null
+cp -r ./dotfiles/.* ~/ &>/dev/null
 cd ..
-rm -r ./dotfiles4 &>/dev/null
+rm -r ./dotfiles &>/dev/null
 
 if type flatpak &>/dev/null
     echo ""
@@ -168,6 +169,13 @@ if type flatpak &>/dev/null
     flatpak install -y fedora com.github.johnfactotum.Foliate
     flatpak install -y fedora org.gnome.Loupe
     flatpak install -y fedora org.gnome.Evince
+
+    flatpak install -y fedora org.qutebrowser.qutebrowser
+    flatpak override --user --filesystem=~/.private/kagi org.qutebrowser.qutebrowser # Let flatpak qutebrowser read config
+    flatpak override --user --filesystem=~/.config/qutebrowser org.qutebrowser.qutebrowser
+    rm -rf ~/.var/app/org.qutebrowser.qutebrowser/config/qutebrowser
+    ln -s ~/.config/qutebrowser ~/.var/app/org.qutebrowser.qutebrowser/config/qutebrowser
+
     flatpak install -y im.riot.Riot
     flatpak install -y org.gnome.Podcasts
 end
