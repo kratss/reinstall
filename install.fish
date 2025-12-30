@@ -8,6 +8,7 @@ if test (count $argv) -eq 0 #or contains -- --help $argv
 --type=: Specify the desired installation type
   headless: config for headless installs
   gui: setup graphical environment
+  apps: graphical environment + commoly used apps
   all: everything needed for my main personal computer setup"
     exit
 end
@@ -38,20 +39,23 @@ sudo $mngr update
 # Read packages from YAML
 set headless (yq '.headless[]' packages.yaml)
 set gui (yq '.gui[]' packages.yaml)
-set primary_device (yq '.primary_device[]' packages.yaml)
 set apps (yq '.apps[]' packages.yaml)
 set flatpaks (yq '.flatpaks[]' packages.yaml)
+set primary_device (yq '.primary_device[]' packages.yaml)
 
 switch $_flag_type
     case headless
         set -g packages $headless
     case gui
         set -g packages $headless $gui
+    case apps
+        set -g packages $headless $gui $apps $flatpaks
     case all
         set -g packages $headless $gui $apps $primary_device
         set -g flatpaks
         set -g groups Multimedia
 end
+
 # Handles varying package names across distros and other quirks
 switch $distro
     case debian ubuntu
@@ -117,8 +121,8 @@ function enable_service -a service -a user_flag
     systemctl $user_flag start $service.service
     systemctl $user_flag status $service.service | head -n 3
 end
-# Disable GDM login manager
-# Login managers cause issue with sway reading $PATH correcily
+
+# Disable GDM login manager. Login managers cause issue with sway reading $PATH correcily
 if contains sway $packages
     echo "Disabling GDM login manager for sway compatibility"
     systemctl disable gdm
@@ -131,7 +135,7 @@ end
 
 # Bluetooth
 if contains bluez $packages
-    enable_service bluez
+    enable_service bluetooth
 end
 
 # Matrix server updater
