@@ -1,0 +1,74 @@
+# Packages to install
+headless: 
+  - curl 
+  - dash 
+  - fish
+  - fuzzel 
+  - fzf 
+  - git 
+  - gitui
+  - gocryptfs 
+  - htop 
+  - NetworkManager-tui 
+  - neovim 
+  - luarocks # lazyvim dep 
+  - fd-find # lazyvim dep 
+  - fuse # lazyvim dep
+  - nnn 
+  - trash-cli 
+  - tree 
+  - w3m 
+  - wl-clipboard
+
+  # Basic packages missing on minimal installs
+  - encfs 
+  - plocate 
+
+gui:
+  - copyq 
+  - foot 
+  - fuzzel 
+  - grimshot 
+  - helvum 
+  - imv 
+  - light
+  - mako
+  - mpv 
+  - pavucontrol 
+  - python3-nacl 
+  - qutebrowser 
+  - sway 
+  - tlp 
+  - waybar 
+  - wlsunset
+
+  # Basic packages missing on minimal installs 
+  - bluez
+  - flatpak 
+  - lxpolkit
+
+primary_device: 
+  - ansible # matrix updater dep 
+  - python3-passlib # matrix updater dep 
+  - just # matrix updater dep 
+  - mullvad-vpn 
+  - mullvad-browser 
+  - rsync # for syncing endor and rubyrose 
+  - vorta
+
+apps:
+  - gnome-software
+  - keepassxc 
+  - newsboat 
+  - thunderbird 
+  - mullvad-browser 
+
+flatpak:
+  - flatpak remote-add --if-not-exists fedora oci+https://registry.fedoraproject.org
+  - flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+  - flatpak install -y fedora com.github.johnfactotum.Foliate
+  - flatpak install -y fedora org.gnome.Loupe
+  - flatpak install -y fedora org.gnome.Evince
+  - flatpak install -y im.riot.Riot
+  - flatpak install -y org.gnome.Podcasts
+  
