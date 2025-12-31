@@ -37,6 +37,7 @@ echo "Installing updates"
 sudo $mngr update
 
 # Read packages from YAML
+cd (dirname (status --current-filename))
 set headless (yq '.headless[]' packages.yaml)
 set gui (yq '.gui[]' packages.yaml)
 set apps (yq '.apps[]' packages.yaml)
@@ -46,13 +47,16 @@ set primary_device (yq '.primary_device[]' packages.yaml)
 switch $_flag_type
     case headless
         set -g packages $headless
+        set -g install_flatpaks false
     case gui
         set -g packages $headless $gui
+        set -g install_flatpaks false
     case apps
-        set -g packages $headless $gui $apps $flatpaks
+        set -g packages $headless $gui $apps
+        set -g install_flatpaks true
     case all
         set -g packages $headless $gui $apps $primary_device
-        set -g flatpaks
+        set -g install_flatpaks true
         set -g groups Multimedia
 end
 
@@ -71,7 +75,7 @@ if contains mullvad-vpn $packages || or contains mullvad-browser $packages
     echo ""
     echo "Enabling Mullvad repo"
     switch $distro
-        case dnf
+        case fedora
             sudo dnf config-manager addrepo --from-repofile=https://repository.mullvad.net/rpm/stable/mullvad.repo --overwrite
         case debian ubuntu
             sudo curl -fsSLo /usr/share/keyrings/mullvad-keyring.asc \
@@ -85,13 +89,14 @@ if contains mullvad-vpn $packages || or contains mullvad-browser $packages
             sudo zypper addrepo -f https://repository.mullvad.net/rpm/stable/mullvad.repo
         case '*'
             echo "ERROR: Unable to enable Mullvad repo"
+            exit
     end
 end
 ##
 ### Installation
 echo ""
 echo "Installing dot files"
-git clone --depth 1 https://github.com/kratss/dotfiles.git >/dev/null
+git clone --depth 1 https://github.com/kratss/dotfiles.git >/dev/null TODO: uncomment
 rm -rf ./dotfiles/.git &>/dev/null
 cp -r ./dotfiles/.* ~/ &>/dev/null
 rm -r ./dotfiles &>/dev/null
@@ -100,12 +105,12 @@ echo ""
 echo "Installing packages"
 echo "sudo $mngr install $packages --skip-unavailable"
 sudo $mngr -y install $packages --skip-unavailable
-if type flatpak &>/dev/null
+if $install_flatpaks
     for flatpak_package in $flatpaks
-        $flatpak_package
+        eval $flatpak_package
     end
 end
-if test "$_flag_type" = gui
+if contains -- "$_flag_type" gui all
     curl -o ~/.local/bin/hawk.fish https://raw.githubusercontent.com/kratss/hawk/refs/heads/master/hawk.fish
     curl -o ~/.local/bin/hawk-preview.fish https://raw.githubusercontent.com/kratss/hawk/refs/heads/master/hawk-preview.fish
 end

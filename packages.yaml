@@ -63,7 +63,7 @@ apps:
   - thunderbird 
   - mullvad-browser 
 
-flatpak:
+flatpaks:
   - flatpak remote-add --if-not-exists fedora oci+https://registry.fedoraproject.org
   - flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
   - flatpak install -y fedora com.github.johnfactotum.Foliate
