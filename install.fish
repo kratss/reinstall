@@ -66,7 +66,7 @@ switch $distro
         set packages (string replace NetworkManager-tui "" $packages)
         set packages (string replace gitui "git-gui" $packages)
     case opensuse-tumbleweed opensuse-leap
-        set packages (string replace nmtui      NetworkManager-tui $packages)
+        set packages (string replace nmtui NetworkManager-tui $packages)
         set packages (string replace foot-extra foot-extra-terminfo $packages)
 end
 ##
@@ -96,7 +96,7 @@ end
 ### Installation
 echo ""
 echo "Installing dot files"
-git clone --depth 1 https://github.com/kratss/dotfiles.git >/dev/null TODO: uncomment
+git clone --depth 1 https://github.com/kratss/dotfiles.git >/dev/null
 rm -rf ./dotfiles/.git &>/dev/null
 cp -r ./dotfiles/.* ~/ &>/dev/null
 rm -r ./dotfiles &>/dev/null
@@ -118,36 +118,12 @@ end
 ##
 ### Systemctl
 echo ""
+systemctl enable --user ~/.config/systemd/user/*.service # Enable all services in config folder
+systemctl enable --user ~/.config/systemd/user/*.timer
+systemctl enable --user ~/.config/systemd/user/*.socket
+contains sway $packages; and systemctl disable gdm # GDM causes sway to read $PATH incorrectly
+contains bluez $pacages; and systemctl enable bluetooth
 
-# Helper function to enable the service name passed to it
-function enable_service -a service -a user_flag
-    echo "Enabling $service.service"
-    systemctl $user_flag enable $service.service
-    systemctl $user_flag start $service.service
-    systemctl $user_flag status $service.service | head -n 3
-end
-
-# Disable GDM login manager. Login managers cause issue with sway reading $PATH correcily
-if contains sway $packages
-    echo "Disabling GDM login manager for sway compatibility"
-    systemctl disable gdm
-end
-
-# Syncthing
-if contains syncthing $packages
-    enable_service syncthing --user
-end
-
-# Bluetooth
-if contains bluez $packages
-    enable_service bluetooth
-end
-
-# Matrix server updater
-if contains all $_flag_type
-    enable_service matrix-updater --user
-end
-##
 ### lazyvim
 # Get nerdfonts for pretty glyphs
 if type apt 2>/dev/null
