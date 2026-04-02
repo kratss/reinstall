@@ -21,7 +21,6 @@ headless:
   - wl-clipboard
 
   # Basic packages missing on minimal installs
-  - encfs 
   - plocate 
 
 gui:

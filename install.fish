@@ -2,10 +2,9 @@
 # vim:foldmethod=marker:foldmarker=###,##
 
 ### Read install type, packages, and distro
-if test (count $argv) -eq 0 #or contains -- --help $argv
+if test (count $argv) -eq 0
     echo "No arguments provided"
-    echo "Installation types:
---type=: Specify the desired installation type
+    echo "--type: Specify the desired installation type
   headless: config for headless installs
   gui: setup graphical environment
   apps: graphical environment + commoly used apps
@@ -70,7 +69,7 @@ switch $distro
         set packages (string replace foot-extra foot-extra-terminfo $packages)
 end
 ##
-### Repo: Mullvad
+### Add Mullvad repo
 if contains mullvad-vpn $packages || or contains mullvad-browser $packages
     echo ""
     echo "Enabling Mullvad repo"
@@ -93,7 +92,7 @@ if contains mullvad-vpn $packages || or contains mullvad-browser $packages
     end
 end
 ##
-### Installation
+### Install packages and dotfiles
 echo ""
 echo "Installing dot files"
 git clone --depth 1 https://github.com/kratss/dotfiles.git >/dev/null
@@ -116,20 +115,20 @@ if contains -- "$_flag_type" gui all
 end
 
 ##
-### Systemctl
+### Enable Systemd services
 echo ""
 systemctl enable --user ~/.config/systemd/user/*.service # Enable all services in config folder
 systemctl enable --user ~/.config/systemd/user/*.timer
 systemctl enable --user ~/.config/systemd/user/*.socket
 contains sway $packages; and systemctl disable gdm # GDM causes sway to read $PATH incorrectly
 contains bluez $pacages; and systemctl enable bluetooth
-
+##
 ### lazyvim
 # Get nerdfonts for pretty glyphs
-if type apt 2>/dev/null
-    wget https://github.com/ryanoasis/nerd-fonts/releases/download/v3.4.0/0xProto.zip
-    sudo unzip *.zip -d /usr/share/fonts/nerd
-    rm -r 0xProto
-end
+#if type apt 2>/dev/null
+#    wget https://github.com/ryanoasis/nerd-fonts/releases/download/v3.4.0/0xProto.zip
+#    sudo unzip *.zip -d /usr/share/fonts/nerd
+#    rm -r 0xProto
+#end
 ##
 swaymsg reload
